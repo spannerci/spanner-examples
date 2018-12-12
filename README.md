@@ -141,10 +141,10 @@ A stage is defined by a list of parameters that define the stage behavior.
 Test Scripts are user defined scripts that contain a list of functional tests to be performed in one or more devices. Currently, they can be written in Python and we can trigger them by using the `script` parameter from the `Testing` stage. Test Scripts are executed within a virtual Linux based environment. In the most primitive form, a test script looks like the one below:
 
 ```python
-from Spanner import Spanner
+import Spanner
 
 def validate_dummy_test_case():
-    spanner.assertTrue(1);
+    Spanner.assertTrue(1);
 
 if __name__ == "__main__":
     validate_dummy_test_case()
