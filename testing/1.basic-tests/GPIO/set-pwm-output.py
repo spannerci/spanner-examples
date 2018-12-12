@@ -9,7 +9,7 @@
 # educational purposes
 
 import time
-import spanner
+import Spanner
 import Testboard
 
 # Our Product's Input will be connected the Testboard's Pin D0, making it our
@@ -26,5 +26,4 @@ def set_pwm_output():
 
 if __name__ == "__main__":
 
-    spanner.runTest(set_pwm_output())
-
+    Spanner.runTest(set_pwm_output())

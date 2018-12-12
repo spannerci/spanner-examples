@@ -9,12 +9,12 @@
 # educational purposes
 
 import time
-from Spanner import Spanner
+import Spanner
 from Testboard import Testboard
 
 testboard = Testboard("testboard_name")
 
-# Our Product's Input will be connected the Testboard's Pin D3, making it our 
+# Our Product's Input will be connected the Testboard's Pin D3, making it our
 # Output Pin
 OUTPUT_PIN = "D3"
 

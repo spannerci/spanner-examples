@@ -14,7 +14,7 @@
 # and connect the A0 pin to 3V3, and the A4 pin to GND.
 
 import time
-from Spanner import Spanner
+import Spanner
 from Testboard import Testboard
 
 testboard = Testboard("testboard_name")
@@ -38,7 +38,7 @@ def validate_analog_input_greater():
     # which is aprox. 1.45V.
     # NOTICE: We could also have used analogReadVoltage() as we do in the next
     # example.
-    spanner.assertGreaterThan(1800, value);
+    Spanner.assertGreaterThan(1800, value);
     # See also assertGreatherThanOrEqual(), or assertEquals()
 
 def validate_analog_input_less():
@@ -50,7 +50,7 @@ def validate_analog_input_less():
     # enough for most purposes.
     value = testboard.analogReadVoltage(INPUT_PIN_2)
 
-    spanner.assertLessThan(2.0, value);
+    Spanner.assertLessThan(2.0, value);
     # See also assertLessThanOrEqual()
 
 if __name__ == "__main__":

@@ -18,13 +18,13 @@
 #
 # This is one real world example of a complex, but realistic, functional test
 # you would run for your devices.
-# 
+#
 # Note: To use this example a special Testboard that can operate in Access Point
-# mode is required. 
+# mode is required.
 
 import time
 import sys
-from Spanner import Spanner
+import Spanner
 from Testboard import Testboard
 
 testboard = Testboard("testboard_name")
@@ -58,13 +58,13 @@ def initialize_switch_off():
 
 def wififoff_toggle_button_toggle_switch():
     # We are turning off the Access Point, so our device will now be in Network
-    # Discovery mode. 
+    # Discovery mode.
     testboard.wifiOff()
     time.sleep(10)
 
     # check PIN state, make sure it's OFF
     switch_status = testboard.digitalRead(INPUT_PIN)
-    spanner.assertFalse(switch_status)
+    Spanner.assertFalse(switch_status)
 
     # Simulate a real-life button press. We toggle the device's button (through
     # our Testboards OUTPUT) 100 miliseconds
@@ -72,7 +72,7 @@ def wififoff_toggle_button_toggle_switch():
 
     # check PIN state, make sure it's now ON
     switch_status = testboard.digitalRead(INPUT_PIN)
-    spanner.assertTrue(switch_status)
+    Spanner.assertTrue(switch_status)
 
     # Simulate a real-life button press. We toggle the device's button (through
     # our Testboards OUTPUT) 100 miliseconds
@@ -80,7 +80,7 @@ def wififoff_toggle_button_toggle_switch():
 
     # check PIN state, make sure it's now OFF again
     switch_status = testboard.digitalRead(INPUT_PIN)
-    spanner.assertFalse(switch_status)
+    Spanner.assertFalse(switch_status)
 
 
 if __name__ == "__main__":

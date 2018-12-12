@@ -13,9 +13,8 @@
 # for your devices.
 
 import time
-import spanner
 import Testboard
-import Spanner from Spanner
+import Spanner
 import os
 import sys
 
@@ -50,12 +49,12 @@ def test_raise_flooding_alarm():
         # e.g data['data'] = 'alarm'
         command = data['data']
         # Double check the name of the command
-        spanner.assertEqual("alarm_triggered", command.name)
-        spanner.assertEqual("water_flooding", command.value)
+        Spanner.assertEqual("alarm_triggered", command.name)
+        Spanner.assertEqual("water_flooding", command.value)
 
         sys.exit(0)
 
 
 if __name__ == "__main__":
 
-    spanner.runTest(test_raise_flooding_alarm())
+    Spanner.runTest(test_raise_flooding_alarm())

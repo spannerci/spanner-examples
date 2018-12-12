@@ -5,7 +5,7 @@
 # awaits for the "ready\n" keyword to initiate the sending process to your device,
 # whereas your device starts counting the incoming characters, until the "\n" char
 # is read. The device responds with the character count which serves as our acknowledgement.
-# Finally, you can assert on the string's length and send back the results to spanner.
+# Finally, you can assert on the string's length and send back the results to Spanner.
 #
 # If you want to replicate this setup, serial interface is available via the
 # Testboard's TX and RX pins. To use them to communicate with your Product,
@@ -22,7 +22,7 @@
 #
 
 from Testboard import Testboard
-from Spanner import Spanner
+import Spanner
 
 testboard = Testboard("testboard_name")
 
@@ -51,7 +51,7 @@ def char_count_mock():
         doAssertSerialRead('%d\n' % (len(LOREM),))
 
     # Execute the mock function
-    spanner.assertEqual(my_procedure.run(), 0)
+    Spanner.assertEqual(my_procedure.run(), 0)
 
 
 if __name__ == "__main__":

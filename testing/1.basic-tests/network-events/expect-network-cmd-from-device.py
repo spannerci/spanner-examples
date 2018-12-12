@@ -15,7 +15,7 @@ import pprint
 import sseclient
 import os
 import sys
-from Spanner import Spanner
+import Spanner
 
 particle_token = os.environ['SPN_PARTICLE_TOKEN']
 
@@ -34,8 +34,8 @@ def expect_network_cmd():
     for event in client.events():
         data = json.loads(event.data)
         # e.g data['data'] = 'heartbeat'
-        # when event arrives fire spanner.assertEqual
-        spanner.assertEqual("heartbeat", data['data'])
+        # when event arrives fire Spanner.assertEqual
+        Spanner.assertEqual("heartbeat", data['data'])
         sys.exit(0)
 
 

@@ -17,7 +17,7 @@
 import time
 import os
 import requests
-from Spanner import Spanner
+import Spanner
 from Testboard import Testboard
 
 ifttt_key = os.environ['IFTTT_API_KEY']
@@ -35,7 +35,7 @@ def test_switch_on_network_cmd():
 
     # check PIN state
     value = testboard.digitalRead(INPUT_PIN)
-    spanner.assertTrue(value)
+    Spanner.assertTrue(value)
 
 def test_switch_off_network_cmd():
     # send network command to our device
@@ -44,7 +44,7 @@ def test_switch_off_network_cmd():
 
     # check PIN state
     value = testboard.digitalRead(INPUT_PIN)
-    spanner.assertFalse(value)
+    Spanner.assertFalse(value)
 
 def set_request(endpoint):
     headers = {"Content-Type": "application/json"}
