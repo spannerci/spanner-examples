@@ -5,9 +5,9 @@ build_binary:
     
 #testing:
 #    script: testing/sample-test-script.py
+#     env_vars:
+#        - $SPN_PARTICLE_TOKEN
 #    device_update:
-#        env_vars:
-#            - $SPN_PARTICLE_TOKEN
 #        devices:
 #            - $DEVID_1
 #        ota_method: particle
