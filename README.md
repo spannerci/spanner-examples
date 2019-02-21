@@ -264,7 +264,7 @@ The structure of the current repository is shown below:
 * Readme.md: The current Readme file.
 
 #### Example 1: Continuous Integration using the Spanner Build Service
-* Step 1: Use a GitHub account. Currently Spanner works with GitHub for Git hosting so a [GitHub account](https://github.com) is required.
+* Step 1: Use a GitHub account. Currently Spanner works with either GitHub or GitLab for Git hosting. For the rest of our examples, GitHub is used by default so make sure to use a [GitHub account](https://github.com).
 
 * Step 2: Fork the current repository (https://github.com/spannerci/spanner-examples) into your own account. This repository contains all the files that you need to get started, together with examples. From now on it is assumed that you work with the forked repository from your account.
 
