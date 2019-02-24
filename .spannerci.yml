@@ -1,14 +1,15 @@
 build_binary:
-    builder: 'particle photon'
+    builder: 'particle'
     binary_name: 'firmware/target/firmware.bin'
     script: cd $SPN_BUILDER_SDK && make PLATFORM=photon APPDIR=$SPN_PROJECT_DIR/firmware
     
 #testing:
 #    script: testing/sample-test-script.py
-#    device_update:
 #        env_vars:
-#            - $SPN_PARTICLE_TOKEN
+#            - $DEVID_1
+#    device_update:
 #        devices:
 #            - $DEVID_1
+#        access_token: $PARTICLE_TOKEN
 #        ota_method: particle
 #        binary: auto
