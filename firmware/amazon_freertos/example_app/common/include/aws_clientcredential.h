@@ -56,12 +56,12 @@ static const char clientcredentialMQTT_BROKER_ENDPOINT[] = "a3njxk364xgnuf.iot.u
 /*
  * Wi-Fi network to join.
  */
-#define clientcredentialWIFI_SSID       "eConais"
+#define clientcredentialWIFI_SSID       "spanner"
 
 /*
  * Password needed to join Wi-Fi network.
  */
-#define clientcredentialWIFI_PASSWORD   "!oTp0wer"
+#define clientcredentialWIFI_PASSWORD   "12345678"
 
 /**
  * @brief Security type
