@@ -2,6 +2,8 @@
 # Particle build & testing
 #
 build_binary:
+    env_vars:
+        - $aws_access_key_id
     builder: 'particle'
     binary_name: 'firmware/target/firmware.bin'
     script: cd $SPN_BUILDER_SDK && make PLATFORM=photon APPDIR=$SPN_PROJECT_DIR/firmware
