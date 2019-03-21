@@ -1,7 +1,4 @@
-import Spanner
+import pytest
 
-def validate_dummy_test_case():
-    Spanner.assertTrue(1);
-
-if __name__ == "__main__":
-    validate_dummy_test_case()
+def test_dummy_case()
+    assert 1 > 0
