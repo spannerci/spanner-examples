@@ -1,4 +1,4 @@
 import pytest
 
-def test_dummy_case()
+def test_dummy_case():
     assert 1 > 0
