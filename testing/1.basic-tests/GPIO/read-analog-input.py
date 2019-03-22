@@ -14,10 +14,10 @@
 # and connect the A0 pin to 3V3, and the A4 pin to GND.
 
 import time
-import Spanner
-from Testboard import Testboard
+import pytest
+from SpannerTestboard import SpannerTestboard
 
-testboard = Testboard("testboard_name")
+testboard = SpannerTestboard("testboard_name")
 # Our device's 1st Analog Output Pin will be connected to the Testboard's A0,
 # making it our Input Pin 1
 INPUT_PIN_1 = "A0"
@@ -25,7 +25,7 @@ INPUT_PIN_1 = "A0"
 # making it our Input Pin 2
 INPUT_PIN_2 = "A4"
 
-def validate_analog_input_greater():
+def test_validate_analog_input_greater():
     # Check PIN state
     # analogRead will give us a value between 0 to 4095, corresponding to a
     # 0-3V3 range.
@@ -38,10 +38,9 @@ def validate_analog_input_greater():
     # which is aprox. 1.45V.
     # NOTICE: We could also have used analogReadVoltage() as we do in the next
     # example.
-    Spanner.assertGreaterThan(1800, value);
-    # See also assertGreatherThanOrEqual(), or assertEquals()
+    assert value > 1800
 
-def validate_analog_input_less():
+def test_validate_analog_input_less():
     # Check PIN state
     # In this example, we use analogReadVoltage() which gives us a Voltage value
     # directly, without having to care about the ADC converter. However, keep in
@@ -50,13 +49,4 @@ def validate_analog_input_less():
     # enough for most purposes.
     value = testboard.analogReadVoltage(INPUT_PIN_2)
 
-    Spanner.assertLessThan(2.0, value);
-    # See also assertLessThanOrEqual()
-
-if __name__ == "__main__":
-
-    validate_analog_input_greater()
-
-    time.sleep(2)
-
-    validate_analog_input_less()
+    assert value < 2.0

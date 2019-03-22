@@ -170,26 +170,21 @@ Please contact us to get a full list of the Spanner pre-defined environment vari
 ## Configuration with .spannerci.yml
 Spanner CI enables continuous integration by adding a `.spannerci.yml` file in the root directory of your repository. This, together with some more configuration options that are mentioned later, make every new commit or pull request to automatically trigger Spanner.
 
-Basically, the `.spannerci.yml` tells Spanner what to do. By default, it runs with three stages:
+Basically, the `.spannerci.yml` tells Spanner what to do. By default, it runs with two stages:
 
-1. `code_qa` stage for code quality checks
-2. `build_binary` stage for firmware builds
-3. `testing` stage for functional tests on real hardware
+1. `build_binary` stage for firmware builds
+2. `testing` stage for functional tests on real hardware
 
 You don't need to use all the above stages and stages with no definitions will be ignored. Each stage contains definitions on what to do. A sample `.spannerci.yml` file is shown below:
 
 ```
-code_qa:
-    level: basic
-    source: firmware/
-
 build_binary:
     builder: 'particle photon'
     binary_name: 'firmware/target/firmware.bin'
     script: cd $SPN_BUILDER_SDK && make PLATFORM=photon APPDIR=$SPN_PROJECT_DIR/firmware
 
 testing:
-    script: testing/basic-tests/GPIO/read-digital-output/scenario.py
+    script: 'pytest -s --verbose testing/basic-tests/GPIO/read-digital-output/scenario.py'
     env_vars:
         - $SPN_PARTICLE_TOKEN
     device_update:
@@ -220,27 +215,26 @@ A stage is defined by a list of parameters that define the stage behavior.
 (1),(2): Please contact us to get a full list of the currently supported device builders and OTA update methods. To get started, make sure to check the [Quick Start Guide](#quick-start-guide) section.
 
 ## Test Scripts
-Test Scripts are user defined scripts that contain a list of functional tests to be performed in one or more devices. Currently, they can be written in Python and we can trigger them by using the `script` parameter from the `Testing` stage. Test Scripts are executed within a virtual Linux based environment. In the most primitive form, a test script looks like the one below:
+Test Scripts are user defined scripts that contain a list of functional tests to be performed in one or more devices. Test Scripts are executed within a virtual Linux based environment. Currently, they can be written in Python and we can trigger them by using the `script` parameter from the `Testing` stage. By default the 'pytest' testing framework is supported (already pre-installed in the virtual environment) but there is no restriction if someone wants to use another testing framework. If unsure, we recommend using pytest. In the most primitive form, a test script looks like the one below:
 
 ```python
-import Spanner
+# Sample/Dummy Spanner CI test script. Pytest testing framework is used throughout
+# all our examples.
+import pytest
 
-def validate_dummy_test_case():
-    Spanner.assertTrue(1);
-
-if __name__ == "__main__":
-    validate_dummy_test_case()
+# This is a sample test case. Note that each test case starts with 'test_'
+def test_dummy_case():
+    # We can use the standard Python 'assert'
+    assert 1 > 0
 ```
 
-In the above example, the validate_dummy_test_case() test case will pass because the assertion performed in this test case is true. Assertions provided by the `Spanner` module and cover various types of values.
-
-One of the most important aspects of Spanner Test Scripts are the Spanner [Testboards](#testboards), that enable the user to write hardware-in-the-loop functional tests. In other words, user is able to test the inputs and outputs of the device. Testboards can be added to the test scripts by importing the `Testboard` module. For example:
+One of the most important aspects of Spanner Test Scripts are the Spanner [Testboards](#testboards), that enable the user to write hardware-in-the-loop functional tests. In other words, user is able to test the inputs and outputs of the device. Testboards can be added to the test scripts by importing the `SpannerTestboard` module. For example:
 ```python
-from Testboard import Testboard
-testboard = Testboard("testboard_name")
+from SpannerTestboard import SpannerTestboard
+testboard = SpannerTestboard("testboard_name")
 ```
 
-Example Test Scripts can be found under `testing` folder in this repository. Choose the one that you want to experiment with by defining the right path in the `script` parameter of `Testing` stage. The Test Scripts are split into three categories:
+Example Test Scripts can be found under `testing` folder in this repository. Choose the one that you want to experiment with by updating the command in the `script` parameter of the `Testing` stage. The Test Scripts are split into three categories:
 
 * `1.basic-tests`, which only perform one action and one test, to showcase that individual test function
 * `2.simple-tests`, which perform a simple real-world scenario, i.e. *Turn Light on through Network Command*
@@ -249,7 +243,7 @@ Example Test Scripts can be found under `testing` folder in this repository. Cho
 Each Test Script contains documentation for the specific use case. To understand the usage of Test Scripts, make sure to check the [Quick Start Guide](#quick-start-guide) section.
 
 ## Testboards
-Spanner Testboards are hardware boards loaded with custom firmware from Spanner. They enable the control of inputs and outputs of the Product either wired or wireless. They communicate with Spanner CI Platform over a network interface. Testboards can be added from the [Testboards](http://console.spannerci.com/app/testboards) Page in the Spanner CI Platform and they can be then assigned to a Spanner Project. To add a new Testboard, the Testboard's Device ID is needed, which is printed on the board. The Testboard name can be used in the [Test Scripts](#test-scripts) to refer to a specific Testboard.
+Spanner Testboards are hardware boards loaded with custom firmware from Spanner. They enable the control of inputs and outputs of the Product either wired or wireless. They communicate with Spanner CI Platform over a network interface. Testboards can be added from the [Testboards](http://console.spannerci.com/app/testboards) Page in the Spanner CI Platform and they can be then assigned to a Spanner Project. To add a new Testboard, the Testboard's Device ID is needed, which is printed on the board or supplied by Spanner. The Testboard name can be used in the [Test Scripts](#test-scripts) to refer to a specific Testboard.
 
 ## Spanner CLI
 Spanner provides a Command Line Interface (CLI) which can be used instead of the Web Interface. For more information please contact us.
@@ -274,7 +268,7 @@ The structure of the current repository is shown below:
 
 * Step 5: Open and review the `.spannerci.yml`, located in the root of your forked repository. As you can see, only the `build_binary` stage is enabled. From the `build_binary` parameters, we understand that the `particle photon` builder will be used. The script indicates the `make` command that will build a binary named `firmware/target/firmware.bin` declared as a binary_name, ready to be flashed in a [Particle](https://www.particle.io) Photon device. Leave the default values and close the file.
 
-* Step 6: Now that we setup everything, we will make a change in our firmware in a new branch, create a Pull Request and check how Spanner will be triggered. Open the application.cpp file under the firmware folder, directly from the GitHub page by clicking the `Edit this file` pencil icon. Just add a new line and then go in the bottom of the page, and check the `Create a new branch for this commit and start a pull request.`. Click the `Commit Changes` button.
+* Step 6: Now that we setup everything, we will make a change in our firmware in a new branch, create a Pull Request and check how Spanner will be triggered. Open the application.cpp file under the firmware/particle folder, directly from the GitHub page by clicking the `Edit this file` pencil icon. Just add a new line and then go in the bottom of the page, and check the `Create a new branch for this commit and start a pull request.`. Click the `Commit Changes` button.
 
 * Step 7: As soon as you create the Pull Request in the above step, Spanner CI will be triggered and start checking if the Pull Request is valid. In our specific case it will build the firmware again and if everything is good, GiHub will show a `All checks have passed` notification.
 
@@ -298,7 +292,7 @@ For this example, a Particle Photon device is required and an active account in 
 
     ```
     testing:
-        script: testing/sample-test-script.py
+        script: 'pytest -s --verbose testing/sample-test-script.py'
         env_vars:
             - $SPN_PARTICLE_TOKEN
         device_update:

@@ -1,3 +1,8 @@
+//
+// This is an example program for Arduino that is acting as the device under test.
+// Please make sure to check uart_periph_mock.py for the actual test case
+//
+
 #include <stdio.h>
 #include <string.h>
 

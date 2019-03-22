@@ -15,7 +15,7 @@ import pprint
 import sseclient
 import os
 import sys
-import Spanner
+import pytest
 
 particle_token = os.environ['SPN_PARTICLE_TOKEN']
 
@@ -25,7 +25,7 @@ def with_urllib3(url):
     http = urllib3.PoolManager()
     return http.request('GET', url, preload_content=False)
 
-def expect_network_cmd():
+def test_expect_network_cmd():
 
     url = 'https://api.particle.io/v1/devices/events?access_token='+particle_token
     response = with_urllib3(url)  # or with_requests(url)
@@ -34,11 +34,6 @@ def expect_network_cmd():
     for event in client.events():
         data = json.loads(event.data)
         # e.g data['data'] = 'heartbeat'
-        # when event arrives fire Spanner.assertEqual
-        Spanner.assertEqual("heartbeat", data['data'])
+        # when event arrives fire the assertion
+        assert data['data'] == "heartbeat"
         sys.exit(0)
-
-
-if __name__ == "__main__":
-
-    expect_network_cmd()

@@ -17,34 +17,16 @@
 import time
 import os
 import requests
-import Spanner
-from Testboard import Testboard
+import pytest
+from SpannerTestboard import SpannerTestboard
 
 ifttt_key = os.environ['IFTTT_API_KEY']
 
-testboard = Testboard("testboard_name")
+testboard = SpannerTestboard("testboard_name")
 
 # Our device's Output Pin will be connected to the Testboard's D7, making it our
 # Input Pin
 INPUT_PIN = "D7"
-
-def test_switch_on_network_cmd():
-    # send network command to our device
-    send_command("turn_on")
-    time.sleep(2)
-
-    # check PIN state
-    value = testboard.digitalRead(INPUT_PIN)
-    Spanner.assertTrue(value)
-
-def test_switch_off_network_cmd():
-    # send network command to our device
-    send_command("turn_off")
-    time.sleep(2)
-
-    # check PIN state
-    value = testboard.digitalRead(INPUT_PIN)
-    Spanner.assertFalse(value)
 
 def set_request(endpoint):
     headers = {"Content-Type": "application/json"}
@@ -55,10 +37,20 @@ def send_command(command):
     endpoint = 'https://maker.ifttt.com/trigger/'+command+'/with/key/'+ifttt_key
     return set_request(endpoint)
 
-if __name__ == "__main__":
-
-    test_switch_on_network_cmd()
-
+def test_switch_on_network_cmd():
+    # send network command to our device
+    send_command("turn_on")
     time.sleep(2)
 
-    test_switch_off_network_cmd()
+    # check PIN state
+    value = testboard.digitalRead(INPUT_PIN)
+    assert value !=0
+
+def test_switch_off_network_cmd():
+    # send network command to our device
+    send_command("turn_off")
+    time.sleep(2)
+
+    # check PIN state
+    value = testboard.digitalRead(INPUT_PIN)
+    assert value == 0
