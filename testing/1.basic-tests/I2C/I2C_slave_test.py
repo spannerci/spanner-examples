@@ -21,12 +21,12 @@
 # consider, spawning a thread or a process to initialize the Testboard, before
 # invoking your product's tests.
 #
-import Spanner
-from Testboard import Testboard
+import pytest
+from SpannerTestboard import SpannerTestboard
 
-testboard = Testboard("testboard_name")
+testboard = SpannerTestboard("testboard_name")
 
-def i2c_slave_device():
+def test_i2c_slave_device():
 
     # Join the bus on address 0x20 with CLK=100KHz
     my_procedure = testboard.createProcedure('I2C-Slave') \
@@ -38,9 +38,4 @@ def i2c_slave_device():
 
     # Timeout of 50 seconds
     exit_code = my_procedure.run(timeout=50000)
-    Spanner.assertEqual(exit_code, 0)
-
-
-if __name__ == "__main__":
-    i2c_slave_device()
-    # Your Product's initialization
+    assert exit_code == 0

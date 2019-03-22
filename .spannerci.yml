@@ -1,13 +1,16 @@
 #
-# Particle build & testing
+# Spanner CI configuration file
 #
+
+# Particle Photon/Electron Firmware Building
 build_binary:
     builder: 'particle'
     binary_name: 'firmware/target/firmware.bin'
-    script: cd $SPN_BUILDER_SDK && make PLATFORM=photon APPDIR=$SPN_PROJECT_DIR/firmware
-   
+    script: cd $SPN_BUILDER_SDK && make PLATFORM=photon APPDIR=$SPN_PROJECT_DIR/firmware/particle
+
+## Particle Device Testing  
 #testing:
-#    script: testing/sample-test-script.py
+#    script: 'pytest -s --verbose testing/sample-test-script.py'
 #        env_vars:
 #            - $DEVID_1
 #    device_update:
@@ -18,7 +21,7 @@ build_binary:
 #        binary: auto
 
 #
-# Amazon FreeRTOS build & testing
+## Amazon FreeRTOS building & testing
 #
 # build_binary:
 #     builder: 'aws esp32'
@@ -27,7 +30,7 @@ build_binary:
 #     binary_name: '/tmp/aws_demos.bin'
 #
 # testing:
-#     script: testing/sample-test-script.py
+#     script: 'pytest -s --verbose testing/sample-test-script.py'
 #     device_update:  
 #         ota_method: 'aws'
 #         access_key_id: $aws_access_key_id

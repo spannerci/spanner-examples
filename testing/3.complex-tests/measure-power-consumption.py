@@ -8,10 +8,10 @@
 # measuring frequency) will not result in us reducing the battery life below the
 # advertised on.
 
-# Our Testboard is connected with a Power Control circuit that allows us to turn
-# the Power to our device On and Off programmatically. It's also connected to a
-#power consumption measurement circuit that allow us to measure the total power
-#consumption in a given time period.
+# Our Testboard is connected with a Power Control circuit (INA219) that allows 
+# us to turn the Power to our device On and Off programmatically. It's also
+# connected to a power consumption measurement circuit that allow us to measure
+# the total power consumption in a given time period.
 
 # The goal of this example is to show you how you can run much more advanced
 # tests than environmental mocks, inputs and outputs. Power Consumption is,
@@ -22,45 +22,43 @@
 # you would run for your devices.
 
 import time
-import Spanner
-from Testboard import Testboard
+import pytest
+from SpannerTestboard import SpannerTestboard
 
-testboard = Testboard("testboard_name")
-# Our Testboard's D3 Pin is connected to a power switching circuit that controls
-# the power going to the device. When we toggle it HIGH, the device will be
-# powered, when LOW, the device will shut down
-OUTPUT_PIN = "D3"
+testboard = SpannerTestboard("testboard_name")
 
-def measure_power_consumption():
+def test_measure_power_consumption():
 
-    # Turn the device off
-    testboard.digitalWrite(OUTPUT_PIN, "LOW");
+    #  Initialize the Power Control circuit (INA219)
+    INA219 = SpannerTestboard.INA219
+        
+    # Start measuring power consumption. The interval (msecs) can be used to
+    # set the desired interval between measurements.
+    testboard.ina219_startMeasurement(INA219.CURRENT_MA, interval=1000)
+    testboard.ina219_startMeasurement(INA219.BUS_VOLTAGE_V)
+    testboard.ina219_startMeasurement(INA219.SHUNT_VOLTAGE_MV)
 
-    # Wait for a while for it to shut down
-    time.sleep(10)
-
-    # Turn the device back on
-    testboard.digitalWrite(OUTPUT_PIN, "HIGH");
-
-    # The device runs some initialization actions in the beginning, which are
-    # not indicative of the true power consumption. Therefore we wait for a
-    # while for the initial conditions to pass
-    time.sleep(90)
-
-    # Start measuring power consumption
-    testboard.startPowerMeasurement()
-
-    # Measure for 5 minutes
-    time.sleep(5*60)
-
+    # Measure for 30 seconds
+    time.sleep(30)
+    
+    # Get an instant measurement
+    print(testboard.ina219_getValue(INA219.SHUNT_VOLTAGE_MV))
+    
     # Stop measuring power consumption
-    testboard.stopPowerMeasurement()
+    testboard.ina219_stopMeasurement(INA219.CURRENT_MA)
+    testboard.ina219_stopMeasurement(INA219.BUS_VOLTAGE_V)
+    testboard.ina219_stopMeasurement(INA219.SHUNT_VOLTAGE_MV)
 
-    # Make sure the total power consumption didn't exceed 100mAh. The
-    # measuredPowerConsumption() will return the total power consumption
-    # measured in the measuring period, in mAh. Then we use the assertLessThan()
-    # function to assert that this is less than the target value of 100.
-    Spanner.assertLessThan(100, testboard.measuredPowerConsumption())
+    # Get average measurements
+    avg_ma =  testboard.ina219_getAverage(INA219.CURRENT_MA)
+    avg_v =  testboard.ina219_getAverage(INA219.BUS_VOLTAGE_V)
+    assert testboard.ina219_getAverage(INA219.SHUNT_VOLTAGE_MV) > 0
+    
+    print(avg_ma)
+    print(avg_v)
 
-if __name__ == "__main__":
-    measure_power_consumption()
+    # Make sure the total power consumption didn't exceed 100mAh
+    assert avg_ma < 100
+    
+    # Make sure the total voltage didn't exceed 5.2V
+    assert avg_v < 5.2

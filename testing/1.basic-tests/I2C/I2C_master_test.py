@@ -22,12 +22,12 @@
 # by the testboard which would preserve the connection open by utilizing the
 # restart signal and preventing other master devices from acquiring the bus.
 #
-import Spanner
-from Testboard import Testboard
+import pytest
+from SpannerTestboard import SpannerTestboard
 
-testboard = Testboard("testboard_name")
+testboard = SpannerTestboard("testboard_name")
 
-def z_axis_check():
+def test_z_axis_check():
 
     # Start the I2C bus with CLK=100KHz
     my_procedure = testboard.createProcedure('I2C-Master') \
@@ -50,8 +50,4 @@ def z_axis_check():
         y = int.from_bytes(result[2:4], byteorder='little', signed=True)
         z = int.from_bytes(result[4:6], byteorder='little', signed=True)
         print("X: %.2f, Y: %.2f, Z: %.2f" % (x, y, z))
-        Spanner.assertLessThan(100, abs(z - 8000))
-
-
-if __name__ == "__main__":
-    z_axis_check()
+        assert abs(z - 8000) < 100

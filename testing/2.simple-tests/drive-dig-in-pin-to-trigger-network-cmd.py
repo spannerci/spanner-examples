@@ -12,14 +12,13 @@
 # This is one real world example of a very simple functional test you would run
 # for your devices.
 
-import time
-import Testboard
-import Spanner
 import os
 import sys
+import time
+import pytest
+from SpannerTestboard import SpannerTestboard
 
-
-testboard = Testboard("testboard_name")
+testboard = SpannerTestboard("testboard_name")
 
 # Our Product's Input will be connected the Testboard's Pin D3, making it our
 # Output Pin
@@ -34,7 +33,7 @@ def with_urllib3(url):
     return http.request('GET', url, preload_content=False)
 
 
-def test_raise_flooding_alarm():
+def test_test_raise_flooding_alarm():
     # set PIN state
     testboard.digitalWrite(OUTPUT_PIN, HIGH)
 
@@ -49,12 +48,7 @@ def test_raise_flooding_alarm():
         # e.g data['data'] = 'alarm'
         command = data['data']
         # Double check the name of the command
-        Spanner.assertEqual("alarm_triggered", command.name)
-        Spanner.assertEqual("water_flooding", command.value)
+        assert "alarm_triggered" == command.name
+        assert "water_flooding" == command.value
 
         sys.exit(0)
-
-
-if __name__ == "__main__":
-
-    Spanner.runTest(test_raise_flooding_alarm())
