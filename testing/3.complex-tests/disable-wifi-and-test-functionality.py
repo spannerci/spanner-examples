@@ -109,4 +109,3 @@ def test_wifioff_toggle_button_toggle_switch():
     # Turn Access Point on again
     turn_ap_on()
     time.sleep(2)
-
