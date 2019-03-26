@@ -19,7 +19,8 @@ OUTPUT_PIN = "D0"
 testboard = SpannerTestboard("testboard_name")
 
 def test_set_pwm_output():
-    # In this example, we'll give it a 50% duty cycle. Our pwmWrite takes values
-    # from 0 to 4095, so a 50% duty cycle would be 2047.
-    testboard.pwmWrite(OUTPUT_PIN, 2047)
-    # See also pwmWrite(pin, value, frequency)
+    # In this example, we'll give it a 50% duty cycle. Our analogWrite takes 
+    # values from 0 to 4095, so a 50% duty cycle would be 2047. The default 
+    # frequency of the PWM signal is 500 Hz.
+    testboard.analogWrite(OUTPUT_PIN, 2047)
+    # See also analogWrite(pin, value, frequency)
