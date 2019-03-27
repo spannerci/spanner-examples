@@ -11,21 +11,21 @@
 # This is one real world example of a very simple functional test you would run
 # for your devices.
 
-# The command is generated through an applet by using a Webhook as a trigger and a compatible eWeLink as an action
-# The IFTTT Key can be found on the above link https://ifttt.com/services/maker_webhooks/settings and must be registered as Environment Variable on project's UI settings page
-
 import time
 import os
 import requests
 import pytest
 from SpannerTestboard import SpannerTestboard
 
+# 'IFTTT_API_KEY' is defined as an environment variable in the Spanner Web UI
+# Project settings page. The actual ifttt key value can be retrieved from IFTTT
+# service (create a webhook for trigger part)
 ifttt_key = os.environ['IFTTT_API_KEY']
 
 testboard = SpannerTestboard("testboard_name")
 
-# Our device's Output Pin will be connected to the Testboard's D7, making it our
-# Input Pin
+# Our device's Output Pin will be connected to the Testboard's D7, making it 
+# our Input Pin
 INPUT_PIN = "D7"
 
 def set_request(endpoint):
