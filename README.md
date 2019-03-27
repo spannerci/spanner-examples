@@ -109,8 +109,8 @@ Also note, that because of the Spanner integration with GitHub & Gitlab, it's po
 
 ## Environment Variables
 Spanner supports the definition of environment variables for each Project. They can be defined in the `Environment Variables` section, under the Project Settings page. They can be referenced in the [.spannerci.yml](#configuration-with-spannerciyml) file using the `$` prefix, e.g `$MY_VAR`, and we use them in two diferrent ways:
-    * Throughout the `.spannerci.yml` file, where they will be replaced by the actual value, as defined in the Project Settings. For example: ```access_token: $MY_ACCESS_TOKEN```.
-    * Inside the `env_vars` stage parameter of building or testing stage, where they will be imported directly in the virtual environment, for example:
+* Throughout the `.spannerci.yml` file, where they will be replaced by the actual value, as defined in the Project Settings. For example: ```access_token: $MY_ACCESS_TOKEN```.
+* Inside the `env_vars` stage parameter of building or testing stage, where they will be imported directly in the virtual environment, for example:
 
 ```
 env_vars:
@@ -229,7 +229,11 @@ Example Test Scripts can be found under `testing` folder in this repository. Cho
 Each Test Script contains documentation for the specific use case. To understand the usage of Test Scripts, make sure to check the [Quick Start Guide](#quick-start-guide) section.
 
 ## Testboards
-Spanner Testboards are hardware boards loaded with custom firmware from Spanner. They enable the control of inputs and outputs of the Product either wired or wireless. They communicate with Spanner CI Platform over a network interface. Testboards can be added from the [Testboards](http://console.spannerci.com/app/testboards) Page in the Spanner CI Platform and they can be then assigned to a Spanner Project. To add a new Testboard, the Testboard's Device ID is needed, which is printed on the board or supplied by Spanner. The Testboard name can be used in the [Test Scripts](#test-scripts) to refer to a specific Testboard.
+Spanner Testboards are off the shelf hardware boards loaded with custom firmware from Spanner. They enable the control of inputs and outputs of the Product either wired or wireless. They communicate with Spanner CI Platform over a network interface. Testboards can be added from the [Testboards](http://console.spannerci.com/app/testboards) Page in the Spanner CI Platform and they can be then assigned to a Spanner Project. To add a new Testboard, the Testboard's Device ID is needed, which is printed on the board or supplied by Spanner. The Testboard name can be used in the [Test Scripts](#test-scripts) to refer to a specific Testboard.
+
+As soon as we create a new Testboard, we can assign it to a new Project by clicking the `assign to Project` icon, under the `Actions` column. 
+![alt text](docs/images/testboard_assign.png)
+Alternatively, we can do that, during the Project creation.
 
 ## Spanner CLI
 Spanner provides a Command Line Interface (CLI) which can be used instead of the Web Interface. For more information please contact us.
