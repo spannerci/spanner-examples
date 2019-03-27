@@ -90,23 +90,6 @@ Update the access token to Spanner CI platform Integrations as many times as you
 
 ![alt text](docs/images/5_1.png)
 
-## Spanner CI Permission Scopes
-
-#### GitHub Permission Scopes
-
-|Permission scope|Why we need it|
-|---|---|
-|Read access to code| To clone repository code in Spanner CI Projects|
-|Read and write access to commit statuses, pull requests, and repository hooks | To trigger Spanner CI platform in each pull / push request|
-|Read access to metadata and vulnerability alerts | To read repositories's metadata and any alerts|
-
-
-#### Gitlab Permission Scopes
-
-|Permission scope|Why we need it|
-|---|---|
-|api| Grants Spanner CI complete read/write access to the API, including all groups and projects.|
-
 ## Projects
 Spanner supports the creation of one or more Projects for working with different repositories. Each Project represents one user repository. To create a new Project:
 
