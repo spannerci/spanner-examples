@@ -232,7 +232,9 @@ Each Test Script contains documentation for the specific use case. To understand
 Spanner Testboards are off the shelf hardware boards loaded with custom firmware from Spanner. They enable the control of inputs and outputs of the Product either wired or wireless. They communicate with Spanner CI Platform over a network interface. Testboards can be added from the [Testboards](http://console.spannerci.com/app/testboards) Page in the Spanner CI Platform and they can be then assigned to a Spanner Project. To add a new Testboard, the Testboard's Device ID is needed, which is printed on the board or supplied by Spanner. The Testboard name can be used in the [Test Scripts](#test-scripts) to refer to a specific Testboard.
 
 As soon as we create a new Testboard, we can assign it to a new Project by clicking the `assign to Project` icon, under the `Actions` column. 
+
 ![alt text](docs/images/testboard_assign.png)
+
 Alternatively, we can do that, during the Project creation.
 
 ## Spanner CLI
