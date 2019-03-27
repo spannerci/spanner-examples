@@ -91,7 +91,9 @@ Update the access token to Spanner CI platform Integrations as many times as you
 ![alt text](docs/images/5_1.png)
 
 ## Projects
-Spanner supports the creation of one or more Projects for working with different repositories. Each Project represents one user repository. To create a new Project:
+Spanner supports the creation of one or more Projects. Each Project represents one user source code repository. It is assumed that you've already enabled an integration with GitHub or Gitlab. If not, please check the [Integrations](#integrations) section. 
+
+To create a new Project:
 
 1. Select Projects from the navigation menu on the left side of the dashboard.
 2. Click on New Project.
@@ -102,14 +104,14 @@ Spanner supports the creation of one or more Projects for working with different
 ## Jobs
 Each time Spanner CI is triggered from a source code commit or pull request a new Job is created automatically. Every Job gets the instructions on what to do from the [.spannerci.yml](#configuration-with-spannerciyml) file and then runs inside a virtual environment. Upon completion, Jobs provide the output result for each running stage and the resulted artifacts (e.g firmware binaries), if any. Moreover, in the `Testing` stage, the output result for each test case is provided.
 
-New Jobs can also be created manually. Each Job belongs to a specific Project. A list with all the Project Jobs can be found under the Project page (accessible by clicking a Project name in the [Projects](http://console.spannerci.com/app/) page). From there, it's possible to get various information about each Job, download any artifacts or even watch any Job in runtime or at a later time.
+New Jobs can also be created manually. Each Job belongs to a specific Project. A list with all the Project Jobs can be found under the Project Info page (accessible by clicking a Project name in the [Projects](http://console.spannerci.com/app/) page). From there, it's possible to get various information about each Job, download any artifacts or even watch any Job in runtime or at a later time.
 
 Also note, that because of the Spanner integration with GitHub & Gitlab, it's possible to watch the Job result directly from GitHub or Gitlab, after creating a new Pull Request.
 
 ## Environment Variables
-Spanner supports the definition of environment variables for each Project. These are variables that will be imported in the Linux based virtual environment that runs a [Spanner Job](#jobs). They are defined from `Environment Variables` section in the Project Settings page. They can be referenced in the [.spannerci.yml](#configuration-with-spannerciyml) file using the `$` prefix, e.g `$MY_VAR`, and we use them in two diferrent ways:
-    a) as a value to a stage parameter, e.g `devices: $DEVICE_ID` and
-    b) inside the `env_vars` parameter that will import them directly in the virtual environment, for example:
+Spanner supports the definition of environment variables for each Project. They can be defined in the `Environment Variables` section, under the Project Settings page. They can be referenced in the [.spannerci.yml](#configuration-with-spannerciyml) file using the `$` prefix, e.g `$MY_VAR`, and we use them in two diferrent ways:
+    * Throughout the `.spannerci.yml` file, where they will be replaced by the actual value, as defined in the Project Settings. For example: ```access_token: $MY_ACCESS_TOKEN```.
+    * Inside the `env_vars` stage parameter of building or testing stage, where they will be imported directly in the virtual environment, for example:
 
 ```
 env_vars:
@@ -117,20 +119,18 @@ env_vars:
     - $ACCESS_TOKEN
 ```
 
-In the latter case, we can reference them as Linux environment variables inside the Python test script, for example:
+And since our [test scripts](#test-scripts) run directly from the virtual environment (which is Linux-based), if needed, we can reference them as any normal linux environment variable, for example:
 
 ```python
 os.environ['DB_NAME']
 os.environ['ACCESS_TOKEN']
 ```
 
-All the environment variables inside [.spannerci.yml](#configuration-with-spannerciyml) must be defined also to the related section in the Project Settings page of Spanner CI console.
-
 Spanner supports a number of pre-defined environment variables, that are either mandatory to use some of the Spanner builders and OTA update methods or just convenient. All Spanner environment variables start with the `SPN_` prefix.
 For example:
 - `SPN_BUILDER_SDK`: is the SDK directory of the selected builder
 - `SPN_PROJECT_DIR`: is the directory in which the source code repository is cloned in the virtual environment
-- `SPN_OUTPUT_BINARY`: is the filename of your generated binary for testing section use.
+- `SPN_OUTPUT_BINARY`: is the filename of your generated firmware binary
 
   ...
 
@@ -150,41 +150,59 @@ You don't need to use all the above stages and stages with no definitions will b
 build_binary:
     builder: 'particle photon'
     binary_name: 'firmware/target/firmware.bin'
-    script: cd $SPN_BUILDER_SDK && make PLATFORM=photon APPDIR=$SPN_PROJECT_DIR/firmware
+    script: cd $SPN_BUILDER_SDK && make PLATFORM=photon APPDIR=$SPN_PROJECT_DIR/firmware/particle
 
 testing:
     script: 'pytest -s --verbose testing/basic-tests/GPIO/read-digital-output/scenario.py'
-    env_vars:
-        - $SPN_PARTICLE_TOKEN
     device_update:
+        ota_method: 'particle'
         devices:
             - $DEVID_1
             - $DEVID_2
-        ota_method: 'particle'
+        access_token: $PARTICLE_TOKEN
         binary: auto
 ```
 
 A stage is defined by a list of parameters that define the stage behavior.
 
-| Keyword | Required | Description |
-| :--- | :--- | :--- |
-| level         | No  | Defines the Spanner Service level |
-| builder       | Yes | Defines the preferred build environment (1) |
-| binary_name   | Yes | Path of the generated binary file based on the SDK platform's documentation
-| env_vars      | No  | Defines a list with environment variables that will be passed in the virtual environment |
-| source        | Yes | Defines the source directory of the firmware |
-| script        | Yes | Defines the script path or command to execute |
-| device_update | No  | Enables OTA update of devices before testing |
-| devices       | Yes | Defines a list of devices to apply the OTA update |
-| ota_method    | Yes | Defines the preferred method for OTA updates (2) |
-| binary        | Yes | Defines the binary source for OTA updates (auto, URL or repo path) |
-| pre_flight    | No  | Override a set of commands that are executed before stage |
-| post_flight   | No  | Override a set of commands that are executed after stage |
+| Keyword | Scope | Required | Description |
+| :--- | :--- | :--- | :--- |
+| builder       | build_binary | Yes | Defines the preferred build environment (1) |
+| binary_name   | build_binary | Yes | Name of the generated binary file based on the SDK platform's documentation
+| env_vars      | build_binary/testing | No  | Defines a list with environment variables that will be passed in the virtual environment |
+| script        | build_binary/testing | Yes | Defines the script or command to execute in building or testing stage |
+| device_update | testing | No  | Enables OTA update of devices before testing |
+| devices       | device_update | Yes | Defines a list of devices to apply the OTA update |
+| ota_method    | device_update | Yes | Defines the preferred method for OTA updates (2) |
+| binary        | device_update | Yes | Defines the binary source for OTA updates (auto, URL or repo path) |
+| access_token  | device_update | Yes | Defines the access token of the OTA platform
+| access_key_id | device_update | Yes | Defines the access key id of the OTA platform (AWS only)
+| secret_access_key | device_update | Yes | Defines the secret key id of the OTA platform (AWS only)
+| s3_bucket | device_update | Yes | Defines the s3 bucket name of the OTA platform (AWS only)
+| signer_profile | device_update | Yes | Defines the signer profile name of the OTA platform (AWS only)
+| aws_region | device_update | Yes | Defines the AWS region of the OTA platform (AWS only)
+| targets | device_update | Yes | Defines the device targets of the OTA platform (AWS only)
+| roleArn | device_update | Yes | Defines the ARN role of the OTA platform (AWS only)
+| pre_flight    | global/build_binary/testing | No  | Defines commands that should run before a stage (3)|
+| post_flight   | global/build_binary/testing | No  | Defines commands that should run after a stage (3)|
 
 (1),(2): Please contact us to get a full list of the currently supported device builders and OTA update methods. To get started, make sure to check the [Quick Start Guide](#quick-start-guide) section.
 
+(3): `pre_flight` and `post_flight` parameters can have global or stage scope. It's possible to overwrite the globally defined `pre_flight` and `post_flight` if you set it per stage:
+```
+pre_flight:
+    - global before building stage
+
+build_binary:
+    pre_flight:
+        - execute this instead of global pre_flight
+    script: my command
+    post_flight:
+        - execute this after my script
+```
+
 ## Test Scripts
-Test Scripts are user defined scripts that contain a list of functional tests to be performed in one or more devices. Test Scripts are executed within a virtual Linux based environment. Currently, they can be written in Python and we can trigger them by using the `script` parameter from the `Testing` stage. By default the 'pytest' testing framework is supported (already pre-installed in the virtual environment) but there is no restriction if someone wants to use another testing framework. If unsure, we recommend using pytest. In the most primitive form, a test script looks like the one below:
+Test Scripts are user defined scripts that contain a list of functional tests to be performed in one or more devices. Test Scripts are executed within a virtual Linux-based environment. Currently, they can be written in Python and we can trigger them by using the `script` parameter from the `Testing` stage. By default the 'pytest' testing framework is supported (already pre-installed in the virtual environment) but there is no restriction if someone wants to use another testing framework. If unsure, we recommend using pytest. In the most primitive form, a test script looks like the one below:
 
 ```python
 # Sample/Dummy Spanner CI test script. Pytest testing framework is used throughout
@@ -203,7 +221,7 @@ from SpannerTestboard import SpannerTestboard
 testboard = SpannerTestboard("testboard_name")
 ```
 
-Example Test Scripts can be found under `testing` folder in this repository. Choose the one that you want to experiment with by updating the command in the `script` parameter of the `Testing` stage. The Test Scripts are split into three categories:
+Example Test Scripts can be found under `testing` folder in this repository. Choose the one that you want to experiment with, by updating the command in the `script` parameter of the `Testing` stage. The Test Scripts are split into three categories:
 
 * `1.basic-tests`, which only perform one action and one test, to showcase that individual test function
 * `2.simple-tests`, which perform a simple real-world scenario, i.e. *Turn Light on through Network Command*
