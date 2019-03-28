@@ -118,7 +118,7 @@ env_vars:
     - $ACCESS_TOKEN
 ```
 
-And since our [test scripts](#test-scripts) run directly from the virtual environment (which is Linux-based), if needed, we can reference them as any normal linux environment variable, for example:
+And since our [test scripts](#test-scripts) run directly from the virtual environment (which is Linux-based), if needed, they can be referenced as any normal linux environment variable, for example:
 
 ```python
 os.environ['DB_NAME']
@@ -237,6 +237,19 @@ As soon as we create a new Testboard, we can assign it to a new Project by click
 
 Alternatively, we can do that, during the Project creation.
 
+As already mentioned, Testboards can be added to the test scripts by importing the `SpannerTestboard` module. After that, we can call any Testboard's function, for example:
+```python
+from SpannerTestboard import SpannerTestboard
+testboard = SpannerTestboard("testboard_name")
+
+# Check Tesboard's D5 Pin state. Our device's output Pin can be connected to D5
+value = testboard.digitalRead("D5")
+```
+
+A Testboard API is provided for accessing peripherals (GPIOs, PWM, I2C, Serial), measure power consumption (voltage, amps, average), control WiFi/BT connectivity etc. Make sure to check the example test scripts that demonstrate part of the Testboard's API. 
+
+--------->  TODO: Mocks
+
 ## Spanner CLI
 Spanner provides a Command Line Interface (CLI) which can be used instead of the Web Interface. For more information please contact us.
 
@@ -244,23 +257,27 @@ Spanner provides a Command Line Interface (CLI) which can be used instead of the
 This section is a step-by-step guide for all the new Spanner CI users. If you still have questions, please contact us.
 
 The structure of the current repository is shown below:
-* firmware: This folder contains an example firmware application for the [Particle](https://www.particle.io) Photon device.
+* firmware: This folder contains an example firmware applications for the various hardware platforms.
 * testing: This folder contains a number of example [Test Scripts](#test-scripts).
 * .spannerci.yml: This is the [Spanner configuration file](#configuration-with-spannerciyml)
 * Readme.md: The current Readme file.
+* Docs: Documentation files
+
+#### Setting Up the Basics: 
+* Use a GitHub account. Currently Spanner works with either GitHub or GitLab for Git hosting. For the rest of our examples, GitHub is used by default so make sure to use a [GitHub account](https://github.com).
+
+* Fork the current repository (https://github.com/spannerci/spanner-examples) into your own account. This repository contains all the files that you need to get started, together with examples. From now on it is assumed that you work with the forked repository from your account. Note that this is only for testing purposes to get started quickly. As soon as you're comfortable with this setup, it's highly advised to create (or use) your own repository and add only the files that you need.
+
+* [Create a Spanner Account](#creating-an-account) and enable the GitHub Integration.
+
+* [Create a Spanner Project](#projects). Do not define any Testboards.
+
 
 #### Example 1: Continuous Integration using the Spanner Build Service
-* Step 1: Use a GitHub account. Currently Spanner works with either GitHub or GitLab for Git hosting. For the rest of our examples, GitHub is used by default so make sure to use a [GitHub account](https://github.com).
 
-* Step 2: Fork the current repository (https://github.com/spannerci/spanner-examples) into your own account. This repository contains all the files that you need to get started, together with examples. From now on it is assumed that you work with the forked repository from your account.
+* Step 5: Open and review the `.spannerci.yml`, located in the root of your forked repository. As you can see, only the `build_binary` stage is enabled. From the `build_binary` parameters, we understand that the `particle` builder will be used. The `script` parameter contains the build script that will used to build a binary named `firmware/target/firmware.bin` (declared as a binary_name), ready to be flashed in a [Particle](https://www.particle.io) Photon device. Leave the default values and close the file.
 
-* Step 3: [Create a Spanner Account](#creating-an-account).
-
-* Step 4: [Create a Spanner Project](#projects). Do not define any Testboards.
-
-* Step 5: Open and review the `.spannerci.yml`, located in the root of your forked repository. As you can see, only the `build_binary` stage is enabled. From the `build_binary` parameters, we understand that the `particle photon` builder will be used. The script indicates the `make` command that will build a binary named `firmware/target/firmware.bin` declared as a binary_name, ready to be flashed in a [Particle](https://www.particle.io) Photon device. Leave the default values and close the file.
-
-* Step 6: Now that we setup everything, we will make a change in our firmware in a new branch, create a Pull Request and check how Spanner will be triggered. Open the application.cpp file under the firmware/particle folder, directly from the GitHub page by clicking the `Edit this file` pencil icon. Just add a new line and then go in the bottom of the page, and check the `Create a new branch for this commit and start a pull request.`. Click the `Commit Changes` button.
+* Step 6: Now we are going to make a dummy change in our firmware. Open the application.cpp file under the firmware/particle folder, directly from the GitHub webpage by clicking the `Edit this file` pencil icon. Just add a new line or a comment and then go in the bottom of the page, and check the `Create a new branch for this commit and start a pull request.`. Click the `Commit Changes` button.
 
 * Step 7: As soon as you create the Pull Request in the above step, Spanner CI will be triggered and start checking if the Pull Request is valid. In our specific case it will build the firmware again and if everything is good, GiHub will show a `All checks have passed` notification.
 
@@ -269,7 +286,7 @@ The structure of the current repository is shown below:
 Repeat Steps 6-8 as many times as you like and enjoy continuous integration in your firmware!
 
 #### Example 2: Using the Spanner Testing Service
-* Step 1: Follow the Steps 1-4 from Example 1.
+
 * Step 2: Open the `.spannerci.yml`, located in the root of your forked repository. Comment everything in the `build_binary` stage and uncomment everything from the `testing` stage. Commit the changes (You can do this directly from the GitHub web page, using the `Edit this file` pencil icon. As you can see from the `script` parameter of the `testing` stage, the `sample-test-script.py` script will be executed.
 * Step 3: Follow the Steps 6-8 from Example 1.
 
@@ -278,8 +295,7 @@ Repeat Step 3 as many times as you like and enjoy continuous integration with au
 #### Example 3: Using Build and Testing Service with Over-The-Air device updates
 For this example, a Particle Photon device is required and an active account in the Particle Platform. This example uses the Spanner CI Build Binary service to build a new binary for the Photon device and then uses the Spanner CI Testing Service to update the firmware of the Photon device and run the functional tests included in the `sample-test-script.py`.
 
-* Step 1: Follow the Steps 1-4 from Example 1.
-* Step 2: Go to the Project Settings Page of Spanner CI Platform and add one Environment Variable, with name `DEVID_1` and value the [Particle Device ID](https://community.particle.io/t/finding-your-device-id/26531) and another with name `SPN_PARTICLE_TOKEN` and value the [Particle Access Token](https://docs.particle.io/guide/how-to-build-a-product/authentication/#what-39-s-an-access-token-) of your account.
+* Step 2: Go to the Project Settings Page of Spanner CI Platform and add one Environment Variable, with name `DEVID_1` and value the [Particle Device ID](https://community.particle.io/t/finding-your-device-id/26531) and another with name `PARTICLE_TOKEN` and value the [Particle Access Token](https://docs.particle.io/guide/how-to-build-a-product/authentication/#what-39-s-an-access-token-) of your account.
 * Step 3: Open the `.spannerci.yml`, located in the root of your forked repository. Add the following lines in the end of the file, to enable the `testing` stage with OTA device updates with a device binary that was produced in th `build_binary` stage:
 
     ```
@@ -288,9 +304,10 @@ For this example, a Particle Photon device is required and an active account in 
         env_vars:
             - $SPN_PARTICLE_TOKEN
         device_update:
+            ota_method: 'particle'
+            access_token: $PARTICLE_TOKEN
             devices:
                 - $DEVID_1
-            ota_method: 'particle'
             binary: auto
     ```
 
@@ -298,5 +315,5 @@ For this example, a Particle Photon device is required and an active account in 
 
 Repeat Step 4 as many times as you like and enjoy continuous integration with automated testing and Over-The-Air updates in your firmware!
 
-#### Example 4: Using Testboards with the Spanner Testing Service
-TODO
+#### Example 4: Using the Spanner Testboard with the Spanner Testing Service
+
