@@ -22,25 +22,49 @@
 # by the testboard which would preserve the connection open by utilizing the
 # restart signal and preventing other master devices from acquiring the bus.
 #
-import pytest
 from SpannerTestboard import SpannerTestboard
+
+DEVICE_ADDRESS = 0x18
 
 testboard = SpannerTestboard("testboard_name")
 
-def test_z_axis_check():
 
+def write_register(procedure, address, value):
+    """ Sends the config address byte and the value to the slave device. """
+    return procedure \
+        .write(DEVICE_ADDRESS, bytearray([address, value]))
+
+
+def read_axis_raw(procedure):
+    """ Sends the command byte for reading, and reads 6 bytes of axis values
+        (2 bytes per axis) from the slave device. """
+    # Write to address => 0x18, data => 0xa8
+    # Read from address => 0x18, number of bytes to read => 6
+    return procedure \
+        .write(DEVICE_ADDRESS, bytearray([0xa8])) \
+        .read(DEVICE_ADDRESS, 6)
+
+
+def test_z_axis_check():
     # Start the I2C bus with CLK=100KHz
     my_procedure = testboard.createProcedure('I2C-Master') \
         .setSpeed(100000) \
         .begin()
 
-    # Write to address => 0x18, data => 0xa8
-    # Read from address => 0x18, number of bytes to read => 6
+    # Enable all axes, normal mode
+    my_procedure = write_register(my_procedure, 0x20, 0x07)
+    # Set data rate to 400Hz
+    my_procedure = write_register(my_procedure, 0x20, 0x77)
+    # High res & BDU enabled
+    my_procedure = write_register(my_procedure, 0x23, 0x88)
+    # DRDY on INT1
+    my_procedure = write_register(my_procedure, 0x22, 0x10)
+    # Enable ADCs
+    my_procedure = write_register(my_procedure, 0x1F, 0x80)
+    
+    # Read axis data
     for _ in range(3):
-        my_procedure \
-            .write(0x18, bytearray([0xa8])) \
-            .read(0x18, 6) \
-            .doWait(1000)
+        my_procedure = read_axis_raw(my_procedure).doWait(200)
 
     # Execute the mock function with results
     exit_code, results = my_procedure.run(withResults=True)
@@ -50,4 +74,4 @@ def test_z_axis_check():
         y = int.from_bytes(result[2:4], byteorder='little', signed=True)
         z = int.from_bytes(result[4:6], byteorder='little', signed=True)
         print("X: %.2f, Y: %.2f, Z: %.2f" % (x, y, z))
-        assert abs(z - 8000) < 100
+        assert abs(z - 16200) < 300
