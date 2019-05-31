@@ -8,10 +8,13 @@
      * [GitHub ](#github-through-spanner-ci-official-github-app)
      * [Gitlab ](#gitlab-through-webhook)
 * [Projects](#projects)
+    * [Project Settings](#projects-settings)
 * [Jobs](#jobs)
 * [Environment Variables](#environment-variables)
 * [Configuration with .spannerci.yml](#configuration-with-spannerciyml)
 * [Test Scripts](#test-scripts)
+* [Build Binary](#build-binary)
+* [Artifacts](#artifacts)
 * [Testboards](#testboards)
 * [Spanner CLI](#spanner-cli)
 * [Quick Start Guide](#quick-start-guide)
@@ -30,7 +33,7 @@ As soon as we create an account and make a new Project in Spanner CI Platform, w
 If you haven't used Spanner CI before, you can create a new account by visiting the [Create an Account](http://console.spannerci.com/app/accounts/register) page. To sign-up, you can either use your GitHub account (recommended) or create a new account directly from Spanner.
 
 #### Option 1: Sign-Up with GitHub ###
-If you already have a GitHub account click the `SIGN UP WITH GITHUB` button and authorize Spanner to use GitHub. 
+If you already have a GitHub account click the `SIGN UP WITH GITHUB` button and authorize Spanner to use GitHub.
 
 ![alt text](docs/images/0_0.png)
 
@@ -38,12 +41,12 @@ After that you'll be asked to fill your organization info:
 
 ![alt text](docs/images/0_1.png)
 
-Next, you have to enable the GitHub integration. For more information about this, please visit the [Integrations](#integrations) section. 
+Next, you have to enable the GitHub integration. For more information about this, please visit the [Integrations](#integrations) section.
 
 #### Option 2: Regular Sign-Up ###
 1. Enter your basic information and click `REGISTER` to continue.
 2. Use the credentials provided above to sign-in.
-3. Enter your organization info to access the Spanner UI. 
+3. Enter your organization info to access the Spanner UI.
 4. Make sure to check the [Integrations](#integrations) section, on how to enable an integration with a code repository, either GitHub or GitLab.
 
 ## Integrations
@@ -54,7 +57,7 @@ This readme contains everything that is needed to get started using Spanner CI i
 
 #### GitHub Integration
 
-Go to the [Integrations](http://console.spannerci.com/app/integrations) page, click the `GitHub` integration and then the `Install The Github App` button, to install the Spanner GitHub App (needed to get access to user repos). 
+Go to the [Integrations](http://console.spannerci.com/app/integrations) page, click the `GitHub` integration and then the `Install The Github App` button, to install the Spanner GitHub App (needed to get access to user repos).
 
 ![alt text](docs/images/0_2.png)
 
@@ -77,20 +80,21 @@ In the next page, check the `All repositories` option and click the `Install` bu
 
 * Sign in to [Spanner CI Platform](https://console-spannerci.com) and go to the Integrations page
 
-![alt text](docs/images/3.png)
+![alt text](docs/images/integrations.png)
 
 * Click on Gitlab Integration and paste the access token from clipboard to the corresponding field
 
-![alt text](docs/images/4.png)
+![alt text](docs/images/integration_gitlab.png)
 
 Update the access token to Spanner CI platform Integrations as many times as you want. Also, do not forget to save your Gitlab access token - you won't be able to access it again.
 
-* To trigger Spanner CI on each push/pull request, copy the GitLab Webhook Secret Token from Spanner CI (as shown below) and then click on Integrations in your Gitlab Project. Fill the URL with http://console.spannerci.com:4000/gitlab/app/hooks and paste your Webhook Secret Token. Choose Trigger events (Push or/and Merge request events) whenever you want to trigger Spanner CI.
+* To trigger Spanner CI on each push/pull request per repository, copy the GitLab Webhook Secret Token from Spanner CI (as shown below) and then click on Integrations in your Gitlab Project. Fill the URL with http://console.spannerci.com:4000/gitlab/app/hooks and paste your Webhook Secret Token. Choose Trigger events (Push or/and Merge request events) whenever you want to trigger Spanner CI.
 
 ![alt text](docs/images/5_1.png)
 
+
 ## Projects
-Spanner supports the creation of one or more Projects. Each Project represents one user source code repository. It is assumed that you've already enabled an integration with GitHub or Gitlab. If not, please check the [Integrations](#integrations) section. 
+Spanner supports the creation of one or more Projects. Each Project represents one user source code repository. It is assumed that you've already enabled an integration with GitHub or Gitlab. If not, please check the [Integrations](#integrations) section.
 
 To create a new Project:
 
@@ -100,6 +104,15 @@ To create a new Project:
 4. Add one or more [Testboards](#testboards).
 5. Click Finish to complete the Project creation.
 
+### Project Settings
+
+Some useful project settings are:
+* Trigger Options :
+    1. The Spanner CI has as default the `Pull Request` option, which triggers a job after each pull request (Merge request in GitLab).
+    2. If you want to trigger Spanner CI on each push, you can enable the `Pushed branch` too.
+* Notifications :
+    1. Additionally, Spanner CI provides the option of email notifications, for completed jobs. The only step you have to take is to enable the `Email` checkbox and register an email address in Account Settings page.
+
 ## Jobs
 Each time Spanner CI is triggered from a source code commit or pull request a new Job is created automatically. Every Job gets the instructions on what to do from the [.spannerci.yml](#configuration-with-spannerciyml) file and then runs inside a virtual environment. Upon completion, Jobs provide the output result for each running stage and the resulted artifacts (e.g firmware binaries), if any. Moreover, in the `Testing` stage, the output result for each test case is provided.
 
@@ -108,11 +121,11 @@ New Jobs can also be created manually. Each Job belongs to a specific Project. A
 Also note, that because of the Spanner integration with GitHub & Gitlab, it's possible to watch the Job result directly from GitHub or Gitlab, after creating a new Pull Request.
 
 ## Environment Variables
-Spanner supports the definition of environment variables for each Project. They can be defined in the `Environment Variables` section, under the Project Settings page. They can be referenced in the [.spannerci.yml](#configuration-with-spannerciyml) file using the `$` prefix, e.g `$MY_VAR`, and we use them in two diferrent ways:
+Spanner supports the definition of environment variables for each Project. They can be defined in the `Environment Variables` section, under the Project Settings page. They can be referenced in the [.spannerci.yml](#configuration-with-spannerciyml) file using the `$` prefix, e.g `$MY_VAR`, and we use them in two differrent ways:
 * Throughout the `.spannerci.yml` file, where they will be replaced by the actual value, as defined in the Project Settings. For example: ```access_token: $MY_ACCESS_TOKEN```.
 * Inside the `env_vars` stage parameter of building or testing stage, where they will be imported directly in the virtual environment, for example:
 
-```
+```yaml
 env_vars:
     - $DB_NAME
     - $ACCESS_TOKEN
@@ -145,9 +158,9 @@ Basically, the `.spannerci.yml` tells Spanner what to do. By default, it runs wi
 
 You don't need to use all the above stages and stages with no definitions will be ignored. Each stage contains definitions on what to do. A sample `.spannerci.yml` file is shown below:
 
-```
+```yaml
 build_binary:
-    builder: 'particle photon'
+    builder: 'particle'
     binary_name: 'firmware/target/firmware.bin'
     script: cd $SPN_BUILDER_SDK && make PLATFORM=photon APPDIR=$SPN_PROJECT_DIR/firmware/particle
 
@@ -167,13 +180,13 @@ A stage is defined by a list of parameters that define the stage behavior.
 | Keyword | Scope | Required | Description |
 | :--- | :--- | :--- | :--- |
 | builder       | build_binary | Yes | Defines the preferred build environment (1) |
-| binary_name   | build_binary | Yes | Name of the generated binary file based on the SDK platform's documentation
+| binary_name   | build_binary | No (5) | Name of the generated binary file based on the SDK platform's documentation
 | env_vars      | build_binary/testing | No  | Defines a list with environment variables that will be passed in the virtual environment |
 | script        | build_binary/testing | Yes | Defines the script or command to execute in building or testing stage |
 | device_update | testing | No  | Enables OTA update of devices before testing |
 | devices       | device_update | Yes | Defines a list of devices to apply the OTA update |
 | ota_method    | device_update | Yes | Defines the preferred method for OTA updates (2) |
-| binary        | device_update | Yes | Defines the binary source for OTA updates (auto, URL or repo path) |
+| binary        | device_update | Yes | Defines the binary source for OTA updates (auto (5), URL or repo path) |
 | access_token  | device_update | Yes | Defines the access token of the OTA platform
 | access_key_id | device_update | Yes | Defines the access key id of the OTA platform (AWS only)
 | secret_access_key | device_update | Yes | Defines the secret key id of the OTA platform (AWS only)
@@ -184,11 +197,12 @@ A stage is defined by a list of parameters that define the stage behavior.
 | roleArn | device_update | Yes | Defines the ARN role of the OTA platform (AWS only)
 | pre_flight    | global/build_binary/testing | No  | Defines commands that should run before a stage (3)|
 | post_flight   | global/build_binary/testing | No  | Defines commands that should run after a stage (3)|
+| artifacts     | build_binary/testing        | No  | Define a list of paths (4)|     
 
 (1),(2): Please contact us to get a full list of the currently supported device builders and OTA update methods. To get started, make sure to check the [Quick Start Guide](#quick-start-guide) section.
 
 (3): `pre_flight` and `post_flight` parameters can have global or stage scope. It's possible to overwrite the globally defined `pre_flight` and `post_flight` if you set it per stage:
-```
+```yaml
 pre_flight:
     - global before building stage
 
@@ -199,6 +213,30 @@ build_binary:
     post_flight:
         - execute this after my script
 ```
+
+(4): `artifacts` parameter has stage scope and will create a `zip` file containing  each given path.  
+
+```yaml
+build_binary:
+    builder: "particle"
+    script: cd $SPN_BUILDER_SDK && make PLATFORM=photon APPDIR=$SPN_PROJECT_DIR/app
+    artifacts:
+        # upload the build's output folder (paths are
+        # relative to the repository path)
+        - 'app/target/'
+
+testing:
+    script: 'pytest --junitxml=output.xml "examples/my_test.py"'
+    artifacts:
+        # Uploads the generated output file
+        - 'output.xml'
+```
+
+You can download the zip file for each script, clicking on button `Download Artifacts` in Project Info page or in Job Info page of Project.
+
+![alt text](docs/images/artifacts.png)
+
+(5): `binary_name`, is only required when used with `binary:auto` option, in the  `device_update` section.
 
 ## Test Scripts
 Test Scripts are user defined scripts that contain a list of functional tests to be performed in one or more devices. Test Scripts are executed within a virtual Linux-based environment. Currently, they can be written in Python and we can trigger them by using the `script` parameter from the `Testing` stage. By default the 'pytest' testing framework is supported (already pre-installed in the virtual environment) but there is no restriction if someone wants to use another testing framework. If unsure, we recommend using pytest. In the most primitive form, a test script looks like the one below:
@@ -228,12 +266,43 @@ Example Test Scripts can be found under `testing` folder in this repository. Cho
 
 Each Test Script contains documentation for the specific use case. To understand the usage of Test Scripts, make sure to check the [Quick Start Guide](#quick-start-guide) section.
 
+## Build Binary
+
+The Build Binary stage, is the place to build your product's firmware. Some of
+our pre-configured builders for jump-starting your project, include builders for
+Particle devices, ESP32 devices and many other hardware platforms.
+A generic vanilla ubuntu 18.04 builder is also available for maximum flexibility
+on customizing your own build environment.
+
+The Spanner Build Binary stage, can also handle over the air updates (OTA),
+for a number of supported builders, via 3rd party cloud services (e.g. Amazon AWS).
+
+An example of the `ubuntu:18.04` builder is shown bellow. In this example,
+we install the gcc arm toolchain, and we export the `arm-none-eabi-gcc` executable
+(just for example, in a real scenario the device firmware, would be exported).
+
+```yaml
+# Sample/Dummy Spanner CI build binary.
+build_binary:
+    builder: 'ubuntu:18.04'
+    script:
+        - apt-get update && apt-get install -y make libarchive-zip-perl git gcc-multilib vim
+        - apt-get install wget
+        - wget https://launchpad.net/gcc-arm-embedded/4.9/4.9-2015-q3-update/+download/gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2
+        - tar xjf gcc-arm*.tar.bz2
+        - export PATH=$PATH:$SPN_PROJECT_DIR/gcc-arm-none-eabi-4_9-2015q3/bin
+        - echo $PATH && arm-none-eabi-gcc --version
+    artifacts:
+        - gcc-arm-none-eabi-4_9-2015q3/bin/arm-none-eabi-gcc
+
+```
+
 ## Testboards
 Spanner Testboards are off the shelf hardware boards loaded with custom firmware from Spanner. They enable the control of inputs and outputs of the Product either wired or wireless. They communicate with Spanner CI Platform over a network interface. Testboards can be added from the [Testboards](http://console.spannerci.com/app/testboards) Page in the Spanner CI Platform and they can be then assigned to a Spanner Project. To add a new Testboard, the Testboard's Device ID is needed, which is printed on the board or supplied by Spanner. The Testboard name can be used in the [Test Scripts](#test-scripts) to refer to a specific Testboard.
 
-As soon as we create a new Testboard, we can assign it to a new Project by clicking the `assign to Project` icon, under the `Actions` column. 
+As soon as we create a new Testboard, we can assign it to a new Project by clicking the `assign to Project` icon, under the `Actions` column.
 
-![alt text](docs/images/testboard_assign.png)
+![alt text](docs/images/assign_testboard.png)
 
 Alternatively, we can do that, during the Project creation.
 
@@ -258,7 +327,7 @@ The structure of the current repository is shown below:
 
 * Step 4: [Create a Spanner Project](#projects). Do not define any Testboards.
 
-* Step 5: Open and review the `.spannerci.yml`, located in the root of your forked repository. As you can see, only the `build_binary` stage is enabled. From the `build_binary` parameters, we understand that the `particle photon` builder will be used. The script indicates the `make` command that will build a binary named `firmware/target/firmware.bin` declared as a binary_name, ready to be flashed in a [Particle](https://www.particle.io) Photon device. Leave the default values and close the file.
+* Step 5: Open and review the `.spannerci.yml`, located in the root of your forked repository. As you can see, only the `build_binary` stage is enabled. From the `build_binary` parameters, we understand that the `particle` builder will be used. The script indicates the `make` command that will build a binary named `firmware/target/firmware.bin` declared as a binary_name, ready to be flashed in a [Particle](https://www.particle.io) Photon device. Leave the default values and close the file.
 
 * Step 6: Now that we setup everything, we will make a change in our firmware in a new branch, create a Pull Request and check how Spanner will be triggered. Open the application.cpp file under the firmware/particle folder, directly from the GitHub page by clicking the `Edit this file` pencil icon. Just add a new line and then go in the bottom of the page, and check the `Create a new branch for this commit and start a pull request.`. Click the `Commit Changes` button.
 
