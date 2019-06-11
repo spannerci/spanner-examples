@@ -5,12 +5,13 @@
 # only the `Photon` Testboards support slave mode. For this example, a slave testboard is
 # connected with the master device (which can represent your product).
 #
-# For this example a simple string message is sent from the slave to the master. The master would
-# first send some command bytes which the slave will `assertRead` them (using a timeout of 10secs).
-# If the master hasn't send the required data in that period the slave will terminate with failure.
-# After the slave read the command Bytes he writes back to the master the `MESSAGE_TEXT`. Again here,
-# the write command has a timeout, which requires of the master to read the data, and prevents the slave
-# from blocking.
+# For this example, a simple string message is sent from the slave to the master. The master would
+# first send the command bytes, which the slave will `assertRead` (using a timeout of 10secs).
+# If the master hasn't send the required data in that period, the slave will terminate with failure.
+# After a successful `assertRead` the slave writes back to the master the `MESSAGE_TEXT`.
+# The write command has a timeout, as well, which requires of the master to read the data in time, and
+# prevents the slave from blocking forever. If you wish for these operations to block, for an undefined
+# period set `timeout` = 0 (default behaviour).
 #
 
 from multiprocessing import Process

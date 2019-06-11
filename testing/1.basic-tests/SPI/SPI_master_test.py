@@ -15,9 +15,9 @@
 #  3V3 -> Vin - This is the 3.3V power supply for the chip.
 #  GND -> GND - This is the ground of the chip.
 #
-# The examples is composed of two parts the actual connection and setup of the sensor (write register part) and
-# later on with the data access (read axis). Please note that setting up the sensor is only required once,
-# as long the module keeps having power on.
+# This example is composed of two parts, the setup of the sensor (writing the configuration values to
+# the IC's registers) and the data access (read axis) part. Please note, configuring the sensor is only
+# required before the first read.
 #
 from Mocks import SPI
 from SpannerTestboard import SpannerTestboard
