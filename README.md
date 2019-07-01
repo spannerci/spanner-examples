@@ -5,8 +5,9 @@
 * [How It Works](#how-it-works)
 * [Creating An Account](#creating-an-account)
 * [Integrations](#integrations)
-     * [GitHub ](#github-through-spanner-ci-official-github-app)
-     * [Gitlab ](#gitlab-through-webhook)
+     * [GitHub ](#github-integration)
+     * [Gitlab ](#gitlab-integration)
+     * [Bitbucket](#bitbucket-integration)
 * [Projects](#projects)
     * [Project Settings](#projects-settings)
 * [Jobs](#jobs)
@@ -91,6 +92,39 @@ Update the access token to Spanner CI platform Integrations as many times as you
 * To trigger Spanner CI on each push/pull request per repository, copy the GitLab Webhook Secret Token from Spanner CI (as shown below) and then click on Integrations in your Gitlab Project. Fill the URL with http://console.spannerci.com:4000/gitlab/app/hooks and paste your Webhook Secret Token. Choose Trigger events (Push or/and Merge request events) whenever you want to trigger Spanner CI.
 
 ![alt text](docs/images/5_1.png)
+
+#### Bitbucket Integration
+
+To integrate Spanner CI with your Bitbucket account, you are going to create an app password for your account, as well as 
+setting up a webhook, to automatically trigger Spanner CI on your repository's push and pull-request events. 
+
+* To create an app password go to *Account Settings > Access Management > App Passwords* and press on the `Create App Password` button.
+Enter a user-friendly name to remember where this password is used for, and click on the `read` repository permission checkbox.
+
+    ![create Bitbucket app password](docs/images/bitbucket-create-app-password.png)
+
+* Click on the `create` button, and a new dialog would be shown, containing your new password. Please copy this password and
+head to Spanner CI integrations page.
+
+    ![Bitbucket app password created](docs/images/bitbucket-created-app-password.png)
+
+* On the Spanner CI integrations page, click on the `Enable Bitbucket Integration` button. 
+Fill the password which you created earlier, and your bitbucket's account username. 
+
+    ![Bitbucket enable integration](docs/images/bitbucket-enable-integration.png)
+
+* Copy the *Bitbucket Webhook Secret Token* and click the `Enable Integration` button. 
+This token is needed in order for Spanner CI to associate webhook events to your account. 
+
+* Head to the repository you wish to enable webhooks. Click on *Settings > Webhooks* and click on *Create Webhook* button. This step is needed 
+in all the repositories you wish to trigger Spanner CI automatically on push or pull-request events. 
+
+    ```
+    The URL of this Webhook example would be: 
+    http://console.spannerci.com:4000/bitbucket/app/hooks/?webhook_token=ae8506c80c72310d91f9f9039348c5ac 
+    ```
+
+    ![Bitbucket webhook](docs/images/bitbucket-add-webhook.png)
 
 
 ## Projects
